@@ -74,13 +74,19 @@ public class FXMLGuiController implements Initializable {
         file = chooser.showSaveDialog(new Stage());
         if (file != null) {
             this.path.setText(file.getAbsolutePath());
+            System.out.println("Output file: " + file.getAbsolutePath());
         }
     }
 
     @FXML
     private void startSim(ActionEvent event) {
         //Tutaj bedzie kolejna logika wołana
+        if(file == null) {
+            System.out.print("Please select output file first\n");
+            return;
+        }
         System.out.print("Starting simulation...\n");
+        // TODO jak skończysz to zapisz do pliku stat, tam jest metoda co zwraca stringa
     }
 
     public App getOwner() {
