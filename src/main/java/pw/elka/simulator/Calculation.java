@@ -84,9 +84,10 @@ public class Calculation {
         this.stat.get(Keys.CUSTOMERS_IN_SYSTEM).set(0, this.stat.get(Keys.CUSTOMERS_IN_QUEUE).getFirst().doubleValue() + c);
     }
     
-    public void addWaitTime(double prevEvEndTime, double arrivalTime) {
+    public double addWaitTime(double prevEvEndTime, double arrivalTime) {
         double c = Math.max(0,prevEvEndTime-arrivalTime);
         this.stat.get(Keys.WAITING_TIME).set(0, this.stat.get(Keys.CUSTOMERS_IN_QUEUE).getFirst().doubleValue() + c);
+        return c;
     }
     
     public void addPocTime(double waitTime, double sojourTime) {
