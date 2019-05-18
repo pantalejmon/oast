@@ -20,6 +20,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import pw.elka.App;
+import pw.elka.simulator.Simulator;
 
 /**
  * FXML Controller class
@@ -32,6 +33,7 @@ public class FXMLGuiController implements Initializable {
     private PrintStream print;
     private OutputStream out;
     private File file;
+    private Simulator simulator;
 
     @FXML
     private TextArea console;
@@ -87,6 +89,8 @@ public class FXMLGuiController implements Initializable {
         }
         System.out.print("Starting simulation...\n");
         // TODO jak skończysz to zapisz do pliku stat, tam jest metoda co zwraca stringa
+        simulator = new Simulator(0.8, 10, false);
+        simulator.estimate(10, 10);
     }
 
     public App getOwner() {

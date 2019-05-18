@@ -25,6 +25,8 @@ public class Simulator {
         this.prevArrivalTime = 0;
         this.waitingTime = 0;
         this.rej = rej;
+        this.pastTL = new TKTimeLine();
+        this.pendingTL = new TKTimeLine();
         this.calculation = new Calculation();
         this.globalStatistic = new Calculation();
     }
@@ -39,7 +41,7 @@ public class Simulator {
 
     // ToDo: nazwa jest na razie jak u Olka
     public void estimate(int numberOfRepeats, int numberOfEvents) {
-        for (int i = 0; i < numberOfRepeats; i++) {
+        for (int i = 0; i < numberOfRepeats; ++i) {
             createEventList(numberOfEvents, i);
             servEvent();
             globalStatistic.addStat(calculation);
@@ -50,9 +52,11 @@ public class Simulator {
     public void servEvent() {
         while (this.pastTL.getLength() > 0 || this.pendingTL.getLength() > 0) {
             if (this.service == 0) {
-                if (pendingTL.getLength() > 0) servPending();
-                if (pastTL.getLength() > 0) servCreated();
-
+                if (pendingTL.getLength() > 0) {
+                    servPending();
+                } else if (pastTL.getLength() > 0) {
+                    servCreated();
+                }
             } else {
                 if (pastTL.getLength() > 0) servServiced();
             }
@@ -62,18 +66,20 @@ public class Simulator {
     public void servCreated() {
         TKEvent event = pastTL.get();
         waitingTime = 0;
-        calculation.addCasQueue(queueLen);
-        calculation.addCasSys(queueLen);
+        calculation.addCasQueue(queueCount);
+        calculation.addCasSys(queueCount);
         calculation.addWaitTime(prevArrivalTime, event.getTimeOfArrival().doubleValue());
         service = 1;
-        event.set((event.getTimeOfArrival().doubleValue() + event.getTimeOfResidence().doubleValue()), TKEvent.Status.PENDING.getStatusText());
+        event.set((event.getTimeOfArrival().doubleValue() + event.getTimeOfResidence().doubleValue()),
+                TKEvent.Status.PROCESSING.getStatusText());
         pastTL.put(event);
     }
 
     public void servPending() {
         TKEvent event = pendingTL.get();
         waitingTime = calculation.addWaitTime(prevArrivalTime, event.getTimeOfArrival().doubleValue());
-        event.set(prevArrivalTime + event.getTimeOfResidence().doubleValue(), TKEvent.Status.PENDING.getStatusText());
+        event.set(prevArrivalTime + event.getTimeOfResidence().doubleValue(),
+                TKEvent.Status.PROCESSING.getStatusText());
         service = 1;
         queueCount -= 1;
         pastTL.put(event);
