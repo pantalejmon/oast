@@ -57,7 +57,10 @@ public class TKEvent {
     public Number getTimeOfResidence() {
         return timeOfResidence;
     }
-    
+
+    public Status getEventStatus() {
+        return eventStatus;
+    }
    
     public TKEventType getType() {
         return type;
