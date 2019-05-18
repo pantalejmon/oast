@@ -91,6 +91,8 @@ public class FXMLGuiController implements Initializable {
         // TODO jak skończysz to zapisz do pliku stat, tam jest metoda co zwraca stringa
         simulator = new Simulator(0.8, 10, false);
         simulator.estimate(10, 10);
+        System.out.print("Writing to file...\n");
+        
     }
 
     public App getOwner() {
