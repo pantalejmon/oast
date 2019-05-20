@@ -43,7 +43,7 @@ public class TKEvent {
         this.type = type;
     }
 
-    public TKEvent(Number timeOfArrival, Number timeOfResidence) {
+    public TKEvent(double timeOfArrival, double timeOfResidence) {
         this.eventStatus = Status.CREATED;
         this.timeOfArrival = timeOfArrival;
         this.timeOfResidence = timeOfResidence;

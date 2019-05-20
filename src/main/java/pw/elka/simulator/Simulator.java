@@ -43,10 +43,13 @@ public class Simulator {
     public void estimate(int numberOfRepeats, int numberOfEvents) {
         for (int i = 0; i < numberOfRepeats; ++i) {
             createEventList(numberOfEvents, i);
+            this.printList();
             servEvent();
             globalStatistic.addStat(calculation);
+            
             calculation.clear();
         }
+        System.out.print(globalStatistic.printStatistics());
     }
 
     public void servEvent() {
@@ -64,9 +67,11 @@ public class Simulator {
     }
 
     public void servCreated() {
+        //System.out.println("servCreated()");
         TKEvent event = pastTL.get();
         waitingTime = 0;
         calculation.addCasQueue(queueCount);
+        //System.out.println("Dodaje do que wartosc:"+ queueCount);
         calculation.addCasSys(queueCount);
         calculation.addWaitTime(prevArrivalTime, event.getTimeOfArrival().doubleValue());
         service = 1;
@@ -76,6 +81,7 @@ public class Simulator {
     }
 
     public void servPending() {
+        //System.out.println("servPending()");
         TKEvent event = pendingTL.get();
         waitingTime = calculation.addWaitTime(prevArrivalTime, event.getTimeOfArrival().doubleValue());
         event.set(prevArrivalTime + event.getTimeOfResidence().doubleValue(),
@@ -86,6 +92,7 @@ public class Simulator {
     }
 
     public void servServiced() {
+        //System.out.println("servServiced()");
         TKEvent event = pastTL.get();
         if (event.getEventStatus().getStatusText().equals(TKEvent.Status.PROCESSING.getStatusText())) {
             service = 0;
@@ -102,6 +109,7 @@ public class Simulator {
                 }
             }
             queueCount += 1;
+            //System.out.print("que: " +  queueCount);
             pendingTL.put(event);
         }
     }
@@ -111,12 +119,11 @@ public class Simulator {
     }
 
     public void printStat(int numElem) {
-        // ToDo: uzupełnić = inaczej to implementujemy? - nasza metoda nie przyjmuje parametrów, u olka tak
-
+        this.calculation.printStatistics();
     }
 
     public void printGlobStat(int numElem) {
-        // ToDo: uzupełnić = inaczej to implementujemy?
+        this.globalStatistic.printStatistics();
     }
 }
 

@@ -11,6 +11,8 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -41,6 +43,10 @@ public class FXMLGuiController implements Initializable {
     private ProgressBar progress;
     @FXML
     private TextField path;
+    @FXML
+    private TextField repeats;
+    @FXML
+    private TextField events;
 
     /**
      * Initializes the controller class.
@@ -59,6 +65,26 @@ public class FXMLGuiController implements Initializable {
         print = new PrintStream(out);
         System.setOut(print);
         System.setErr(print);
+
+        repeats.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue,
+                    String newValue) {
+                if (!newValue.matches("\\d*")) {
+                    repeats.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            }
+        });
+        
+        events.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue,
+                    String newValue) {
+                if (!newValue.matches("\\d*")) {
+                    events.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            }
+        });
     }
 
     @FXML
@@ -83,16 +109,17 @@ public class FXMLGuiController implements Initializable {
     @FXML
     private void startSim(ActionEvent event) {
         //Tutaj bedzie kolejna logika wołana
-        if(file == null) {
+        if (file == null) {
             System.out.print("Please select output file first\n");
             return;
         }
         System.out.print("Starting simulation...\n");
         // TODO jak skończysz to zapisz do pliku stat, tam jest metoda co zwraca stringa
         simulator = new Simulator(0.8, 10, false);
-        simulator.estimate(10, 10);
+        simulator.estimate(Integer.parseInt(repeats.getText()), Integer.parseInt(events.getText()));
+        simulator.printList();
         System.out.print("Writing to file...\n");
-        
+
     }
 
     public App getOwner() {

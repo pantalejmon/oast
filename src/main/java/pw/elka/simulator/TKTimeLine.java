@@ -35,6 +35,7 @@ public class TKTimeLine {
             }
         }
         this.timeLine.remove(min);
+        //System.out.println("Zwracam AT: " + min.getTimeOfArrival().doubleValue() + " RT: " + min.getTimeOfResidence().doubleValue() + " Status: " + min.getEventStatus().getStatusText());
         return min;
     }
 
@@ -47,19 +48,22 @@ public class TKTimeLine {
         this.timeLine.clear(); // Czyszcze liste
         for (int i = 0; i < n; ++i) {
             rt = exponentialGenerator((long) seed, mi);
-            this.timeLine.push(new TKEvent(at, rt));
+            this.timeLine.add(new TKEvent(at, rt));
             at += exponentialGenerator((long) seed, lmd);
         }
     }
 
     public double exponentialGenerator(long seed, double param) {
-        Random rand = new Random(seed);
+        Random rand = new Random();
+        //System.out.println("rand: " + rand.nextDouble());
         return Math.log(1 - rand.nextDouble()) / (-param);
     }
     
     public void print() {
-        for(TKEvent t : timeLine){
-            System.out.println("AT: " + t.getTimeOfArrival().doubleValue() + " RT: " + t.getTimeOfResidence().doubleValue());
+        
+        System.out.println("Number of events: " + this.timeLine.size());
+        for(TKEvent t : this.timeLine){
+            System.out.println("AT: " + t.getTimeOfArrival().doubleValue() + " RT: " + t.getTimeOfResidence().doubleValue() + " Status: " + t.getEventStatus().getStatusText());
         }
         System.out.println("____________________________");
     }

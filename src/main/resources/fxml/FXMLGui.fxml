@@ -18,9 +18,9 @@
             <Font size="33.0" />
          </font>
       </Label>
-      <Button layoutX="546.0" layoutY="144.0" mnemonicParsing="false" onAction="#chooseFile" text="..." AnchorPane.rightAnchor="30.0" />
-      <TextField fx:id="path" editable="false" layoutX="90.0" layoutY="144.0" prefHeight="25.0" prefWidth="371.0" promptText="Your file path here..." AnchorPane.leftAnchor="90.0" AnchorPane.rightAnchor="54.0" />
-      <Label layoutX="30.0" layoutY="148.0" prefHeight="17.0" text="Output file" AnchorPane.leftAnchor="30.0" />
+      <Button layoutX="546.0" layoutY="107.0" mnemonicParsing="false" onAction="#chooseFile" text="..." AnchorPane.rightAnchor="30.0" />
+      <TextField fx:id="path" editable="false" layoutX="90.0" layoutY="107.0" prefHeight="25.0" prefWidth="371.0" promptText="Your file path here..." AnchorPane.leftAnchor="90.0" AnchorPane.rightAnchor="54.0" />
+      <Label layoutX="30.0" layoutY="111.0" prefHeight="17.0" text="Output file" AnchorPane.leftAnchor="30.0" />
       <Button layoutX="254.0" layoutY="187.0" mnemonicParsing="false" onAction="#startSim" prefHeight="61.0" prefWidth="149.0" text="START" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="190.0">
          <font>
             <Font size="22.0" />
@@ -33,5 +33,9 @@
          </font>
       </TextArea>
       <CheckBox layoutX="201.0" layoutY="308.0" mnemonicParsing="false" onAction="#toggleConsole" selected="true" text="Show console" AnchorPane.leftAnchor="201.0" AnchorPane.rightAnchor="199.0" />
+      <TextField fx:id="repeats" layoutX="226.0" layoutY="146.0" prefHeight="25.0" prefWidth="57.0" text="10" />
+      <Label layoutX="166.0" layoutY="150.0" prefHeight="17.0" text="Repeats:" />
+      <Label layoutX="327.0" layoutY="150.0" prefHeight="17.0" text="Events:" />
+      <TextField fx:id="events" layoutX="380.0" layoutY="146.0" prefHeight="25.0" prefWidth="57.0" text="10" />
    </children>
 </AnchorPane>
