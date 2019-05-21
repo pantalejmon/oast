@@ -2,6 +2,8 @@ package pw.elka.simulator;
 
 import java.awt.*;
 import java.util.LinkedList;
+import javafx.application.Platform;
+import pw.elka.controllers.FXMLGuiController;
 
 /**
  * Simulator1
@@ -14,8 +16,9 @@ public class Simulator {
     boolean rej;
     private long queueLen, queueCount, service, eventQuantity;
     private Calculation calculation, globalStatistic;
+    private final FXMLGuiController controller;
 
-    public Simulator(double ro, long ql, boolean rej) {
+    public Simulator(double ro, long ql, boolean rej, FXMLGuiController con) {
         this.lmd = 1;
         this.mi = 1 / ro;
         this.queueLen = ql;
@@ -29,6 +32,7 @@ public class Simulator {
         this.pendingTL = new TKTimeLine();
         this.calculation = new Calculation();
         this.globalStatistic = new Calculation();
+        this.controller = con;
     }
 
     public void createEventList(long liczba, double seed) {
@@ -42,14 +46,18 @@ public class Simulator {
     // ToDo: nazwa jest na razie jak u Olka
     public void estimate(int numberOfRepeats, int numberOfEvents) {
         for (int i = 0; i < numberOfRepeats; ++i) {
+            double p =(double) (i + 1) / numberOfRepeats;
+            this.controller.setProgress(p);
             createEventList(numberOfEvents, i);
-            this.printList();
+            //this.printList();
             servEvent();
             globalStatistic.addStat(calculation);
-            
+
             calculation.clear();
+
         }
         System.out.print(globalStatistic.printStatistics());
+        
     }
 
     public void servEvent() {
@@ -61,7 +69,9 @@ public class Simulator {
                     servCreated();
                 }
             } else {
-                if (pastTL.getLength() > 0) servServiced();
+                if (pastTL.getLength() > 0) {
+                    servServiced();
+                }
             }
         }
     }
@@ -126,4 +136,3 @@ public class Simulator {
         this.globalStatistic.printStatistics();
     }
 }
-

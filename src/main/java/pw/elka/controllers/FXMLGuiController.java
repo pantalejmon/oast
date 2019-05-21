@@ -85,6 +85,9 @@ public class FXMLGuiController implements Initializable {
                 }
             }
         });
+        
+        file = new File(System.getProperty("user.dir") + "/simulation.oast");
+        this.path.setText(file.getAbsolutePath());
     }
 
     @FXML
@@ -115,7 +118,7 @@ public class FXMLGuiController implements Initializable {
         }
         System.out.print("Starting simulation...\n");
         // TODO jak skończysz to zapisz do pliku stat, tam jest metoda co zwraca stringa
-        simulator = new Simulator(0.8, 10, false);
+        simulator = new Simulator(0.8, 10, false,this);
         simulator.estimate(Integer.parseInt(repeats.getText()), Integer.parseInt(events.getText()));
         simulator.printList();
         System.out.print("Writing to file...\n");
@@ -137,5 +140,9 @@ public class FXMLGuiController implements Initializable {
         } else {
             console.setVisible(true);
         }
+    }
+    
+    public void setProgress(double progress) {
+        this.progress.setProgress(progress);
     }
 }
