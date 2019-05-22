@@ -15,15 +15,15 @@ public class Simulator {
     private TKTimeLine crashesTL;
     private double lmd, mi, prevArrivalTime, waitingTime;
     boolean rej;
-    private long queueLen, queueCount, service, eventQuantity;
+    private long  queueCount, service, eventQuantity;
     private Calculation calculation;
     private GlobalCalculation globalStatistic;
     private final FXMLGuiController controller;
 
-    public Simulator(double lambda, double ro, long ql, boolean rej, FXMLGuiController con) {
+    public Simulator(double lambda, double ro, boolean rej, FXMLGuiController con) {
         this.lmd = lambda;
         this.mi = 1 / ro;
-        this.queueLen = ql;
+        
         this.queueCount = 0;
         this.service = 0;
         this.eventQuantity = 0;
@@ -36,18 +36,23 @@ public class Simulator {
         this.calculation = new Calculation();
         this.globalStatistic = new GlobalCalculation();
         this.controller = con;
+        
     }
 
-    public void createEventList(long liczba, int seed) {
+    public void createEventList(long liczba, int seed, boolean uniform) {
         this.service = 0;
         this.queueCount = 0;
         this.prevArrivalTime = 0;
         this.waitingTime = 0;
-        this.pastTL.generate(liczba, lmd, mi, seed);
+        if (uniform) {
+            this.pastTL.generateUniform(liczba, seed);
+        } else {
+            this.pastTL.generate(liczba, lmd, mi, seed);
+        }
     }
 
     // ToDo: nazwa jest na razie jak u Olka
-    public void estimate(int numberOfRepeats, int numberOfEvents, boolean crashes) throws CloneNotSupportedException {
+    public void estimate(int numberOfRepeats, int numberOfEvents, boolean crashes, boolean uniform) throws CloneNotSupportedException {
         globalStatistic.clear();                        // Czyszczenie global statistic
         for (int i = 0; i < numberOfRepeats; ++i) {
             double p = (double) (i + 1) / numberOfRepeats;
@@ -55,7 +60,8 @@ public class Simulator {
             Platform.runLater(() -> {
                 this.controller.setProgress(p);
             });
-            createEventList(numberOfEvents, i);             // Utworzenie listy zdarzeń
+
+            createEventList(numberOfEvents, i, uniform);             // Utworzenie listy zdarzeń
             if (crashes) {
                 this.crashesTL.generateCrashes(pastTL);
                 //System.out.println("Wygenerowano zawiechy");
@@ -144,12 +150,7 @@ public class Simulator {
             calculation.addCasQueue(queueCount);
             calculation.addCasSys(queueCount + service);
             event.set(-1, TKEvent.Status.PENDING.getStatusText());
-            if (queueCount >= queueLen) {
-                calculation.addBuffGT();
-                if (rej) {
-                    calculation.addRejCount();
-                }
-            }
+           
             queueCount += 1;
             //System.out.print("que: " +  queueCount);
             pendingTL.put(event);

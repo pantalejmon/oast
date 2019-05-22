@@ -52,6 +52,17 @@ public class TKTimeLine {
         }
     }
     
+    public void generateUniform( long n ,double seed) {
+        double at = 0, rt = 0;
+        this.timeLine.clear(); // Czyszcze liste
+        Random rand = new Random((long) seed);
+        for (int i = 0; i < n; ++i) {
+            rt = rand.nextDouble() * (0.15 - 0.1)+0.1;
+            this.timeLine.add(new TKEvent(at, rt));
+            at += rand.nextDouble() * (0.15 - 0.1)+0.1;
+        }
+    }
+    
     public void generateCrashes(TKTimeLine events) {
         double at = 0, rt = 0;
         this.timeLine.clear(); // Czyszcze liste

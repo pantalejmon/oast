@@ -55,6 +55,8 @@ public class FXMLGuiController implements Initializable {
     private TextField lambda;
     @FXML
     private CheckBox crashes;
+    @FXML
+    private CheckBox uniform;
 
     /**
      * Initializes the controller class.
@@ -132,8 +134,8 @@ public class FXMLGuiController implements Initializable {
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                simulator = new Simulator(Double.parseDouble(lambda.getText()), 0.8, 10, false, ref);
-                simulator.estimate(Integer.parseInt(repeats.getText()), Integer.parseInt(events.getText()), crashes.isSelected());
+                simulator = new Simulator(Double.parseDouble(lambda.getText()), 0.125, false, ref);
+                simulator.estimate(Integer.parseInt(repeats.getText()), Integer.parseInt(events.getText()), crashes.isSelected(), uniform.isSelected());
                 FileWriter fr = null;
                 simulator.compute();
                 String text = simulator.getCsv();
