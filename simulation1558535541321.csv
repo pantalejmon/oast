@@ -1,7 +1,0 @@
-;0;1;2;
-customers_in_queue; 0.0;0.0;0.0;
-customers_in_system; 1.0;1.0;0.0;
-waiting_time; 0.7873195608654304;0.7751964206194044;0.0;
-proceeding_time; 1.5154577047636488;1.5867988514117763;1.0503393256164355;
-rejected_counter; 
-buf_gt; 

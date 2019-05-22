@@ -18,6 +18,7 @@ public class GlobalCalculation {
 
     private final List<Calculation> calculations = new ArrayList<>();
     private Calculation finalStat = new Calculation();
+    private Calculation averageStat = new Calculation();
 
     public void addStat(Calculation s) throws CloneNotSupportedException {
 //        System.out.print("-----------dodaje--------------" + "\n");
@@ -50,6 +51,16 @@ public class GlobalCalculation {
                 finalStat.getStat().get(t).add(averageNum[_i]);
             }
         }
+        
+        for (Calculation.Keys t : Calculation.Keys.values()) {
+            double avg,sum = 0;
+            for(int i = 0; i < finalStat.getStat().get(t).size(); i++) {
+                sum += finalStat.getStat().get(t).get(i).doubleValue();
+            }
+            avg = sum/finalStat.getStat().get(t).size();
+            averageStat.getStat().get(t).add(avg);
+           
+        }
     }
 
     public void clear() {
@@ -66,6 +77,6 @@ public class GlobalCalculation {
     public String printCSV() {
         compute();
         
-        return finalStat.printCsv();
+        return finalStat.printCsv() + "\n" + averageStat.printCsv();
     }
 }
