@@ -13,7 +13,7 @@
         <URL value="@/styles/fxmlgui.css" />
     </stylesheets>
    <children>
-      <Label layoutX="191.0" layoutY="28.0" prefHeight="77.0" prefWidth="219.0" text="TK simulator" AnchorPane.topAnchor="30.0">
+      <Label layoutX="308.0" layoutY="14.0" prefHeight="77.0" prefWidth="186.0" text="TK simulator" AnchorPane.topAnchor="14.0">
          <font>
             <Font size="33.0" />
          </font>
@@ -36,7 +36,7 @@
       <TextField fx:id="repeats" layoutX="103.0" layoutY="146.0" prefHeight="25.0" prefWidth="57.0" text="100" />
       <Label layoutX="43.0" layoutY="150.0" prefHeight="17.0" text="Repeats:" />
       <Label layoutX="184.0" layoutY="150.0" prefHeight="17.0" text="Events:" />
-      <TextField fx:id="events" layoutX="237.0" layoutY="146.0" prefHeight="25.0" prefWidth="57.0" text="100" />
+      <TextField fx:id="events" layoutX="237.0" layoutY="146.0" prefHeight="25.0" prefWidth="57.0" text="1000" />
       <TextField fx:id="lambda" layoutX="372.0" layoutY="146.0" prefHeight="25.0" prefWidth="57.0" text="1" />
       <Label layoutX="316.0" layoutY="150.0" prefHeight="17.0" text="Lambda:" />
       <Button layoutX="707.0" layoutY="315.0" mnemonicParsing="false" onAction="#clear" prefHeight="25.0" prefWidth="107.0" text="Clear console" />

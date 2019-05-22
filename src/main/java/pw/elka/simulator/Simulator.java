@@ -107,14 +107,7 @@ public class Simulator {
         waitingTime = 0;
         calculation.addCasQueue(queueCount);
         calculation.addCasSys(queueCount);
-        if (serverCrashed) {
-            calculation.addWaitTime(prevArrivalTime, crashedTimeEnd);
-            event.set((crashedTimeEnd + event.getTimeOfResidence().doubleValue()),
-                    TKEvent.Status.PROCESSING.getStatusText());
-
-            pastTL.put(event);
-
-        } else if (crashesTL.getLength() > 0) {
+        if (crashesTL.getLength() > 0) {
             TKEvent crash = crashesTL.get();
             if (crash.getTimeOfArrival().doubleValue() < event.getTimeOfArrival().doubleValue() && (crash.getTimeOfArrival().doubleValue() + crash.getTimeOfResidence().doubleValue()) > event.getTimeOfArrival().doubleValue()) {
                 calculation.addWaitTime(prevArrivalTime, crash.getTimeOfArrival().doubleValue() + crash.getTimeOfResidence().doubleValue());
@@ -123,7 +116,11 @@ public class Simulator {
 
                 pastTL.put(event);
                 serverCrashed = true;
-                crashedTimeEnd = crash.getTimeOfArrival().doubleValue() + crash.getTimeOfResidence().doubleValue();
+            } else if (crash.getTimeOfArrival().doubleValue() < event.getTimeOfArrival().doubleValue() && (crash.getTimeOfArrival().doubleValue() + crash.getTimeOfResidence().doubleValue()) < event.getTimeOfArrival().doubleValue()) {
+                calculation.addWaitTime(prevArrivalTime, event.getTimeOfArrival().doubleValue());
+                event.set((event.getTimeOfArrival().doubleValue() + event.getTimeOfResidence().doubleValue()),
+                        TKEvent.Status.PROCESSING.getStatusText());
+
             } else {
                 crashesTL.put(crash);
                 calculation.addWaitTime(prevArrivalTime, event.getTimeOfArrival().doubleValue());
@@ -161,49 +158,29 @@ public class Simulator {
 
         // Koniec obsługi
         TKEvent event = pastTL.get();
-        if (!serverCrashed) {
-            if (event.getEventStatus().getStatusText().equals(TKEvent.Status.PROCESSING.getStatusText())) {
-                //System.out.println("servServiced() Koniec obsługi zdarzenia o czasie obslugi:" + event.getTimeOfResidence());
-                service = 0;
-                calculation.addPocTime(waitingTime, event.getTimeOfResidence().doubleValue());
-                prevArrivalTime = event.getTimeOfArrival().doubleValue();
-            } else if (event.getEventStatus().getStatusText().equals(TKEvent.Status.CREATED.getStatusText())) {//Dodanie zdarzenia do listy zdarzeń oczekujacych 
-                //System.out.println("servServiced() Wrzucanie zdarzenia do oczekujacych o czasie obslugi:" + event.getTimeOfResidence());
 
-                calculation.addCasQueue(queueCount);
-                calculation.addCasSys(queueCount + service);
-                event.set(-1, TKEvent.Status.PENDING.getStatusText());
-                queueCount += 1;
-                //System.out.print("que: " +  queueCount);
-                pendingTL.put(event);
-            }
-        } else {
-            if (event.getTimeOfArrival().doubleValue() > crashedTimeEnd) {
-                serverCrashed = false;
-            } else {
-                if (event.getEventStatus().getStatusText().equals(TKEvent.Status.PROCESSING.getStatusText())) {
-                //System.out.println("servServiced() Koniec obsługi zdarzenia o czasie obslugi:" + event.getTimeOfResidence());
-                service = 0;
-                calculation.addPocTime(waitingTime, event.getTimeOfResidence().doubleValue() + crashedTimeEnd);
-                prevArrivalTime = event.getTimeOfArrival().doubleValue();
-            } else if (event.getEventStatus().getStatusText().equals(TKEvent.Status.CREATED.getStatusText())) {//Dodanie zdarzenia do listy zdarzeń oczekujacych 
-                //System.out.println("servServiced() Wrzucanie zdarzenia do oczekujacych o czasie obslugi:" + event.getTimeOfResidence());
+        if (event.getEventStatus().getStatusText().equals(TKEvent.Status.PROCESSING.getStatusText())) {
+            //System.out.println("servServiced() Koniec obsługi zdarzenia o czasie obslugi:" + event.getTimeOfResidence());
+            service = 0;
+            calculation.addPocTime(waitingTime, event.getTimeOfResidence().doubleValue());
+            prevArrivalTime = event.getTimeOfArrival().doubleValue();
+        } else if (event.getEventStatus().getStatusText().equals(TKEvent.Status.CREATED.getStatusText())) {//Dodanie zdarzenia do listy zdarzeń oczekujacych 
+            //System.out.println("servServiced() Wrzucanie zdarzenia do oczekujacych o czasie obslugi:" + event.getTimeOfResidence());
 
-                calculation.addCasQueue(queueCount);
-                calculation.addCasSys(queueCount + service);
-                event.set(-1, TKEvent.Status.PENDING.getStatusText());
-                queueCount += 1;
-                //System.out.print("que: " +  queueCount);
-                pendingTL.put(event);
-            
-
-            }
+            calculation.addCasQueue(queueCount);
+            calculation.addCasSys(queueCount + service);
+            event.set(-1, TKEvent.Status.PENDING.getStatusText());
+            queueCount += 1;
+            //System.out.print("que: " +  queueCount);
+            pendingTL.put(event);
         }
+        if (event.getTimeOfArrival().doubleValue() > crashedTimeEnd) {
+            serverCrashed = false;
+        }
+
     }
 
-}
-
-public void printList() {
+    public void printList() {
         pastTL.print();
     }
 

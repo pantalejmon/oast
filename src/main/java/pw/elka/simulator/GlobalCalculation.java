@@ -39,8 +39,10 @@ public class GlobalCalculation {
 //            System.out.print(c.printStatistics());
             for (Calculation.Keys t : Calculation.Keys.values()) {
                 if (t.getId() == Calculation.Keys.WAITING_TIME.getId()) {
+                   
                     full.getStat().get(t).add(c.computeWaitTime());
                 }else if (t.getId() == Calculation.Keys.PROCESSING_TIME.getId()){
+                    
                     full.getStat().get(t).add(c.computeProcessingTime());
                 }
                 else {
