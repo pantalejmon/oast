@@ -27,6 +27,7 @@ public class GlobalCalculation {
     }
 
     public void compute() {
+        System.out.print("Computing...\n");
         Calculation full = new Calculation();
 //        System.out.print("Liczba powtorzen do obliczenia sredniej: " + calculations.size() + "\n");
         for (Calculation c : calculations) {
@@ -39,28 +40,32 @@ public class GlobalCalculation {
         }
 //        System.out.print("-----------suma--------------" + "\n");
 //        System.out.print(full.printStatistics());
-
+        //System.out.print("tp1\n");
         for (Calculation.Keys t : Calculation.Keys.values()) {
+            if(t.getId() != Calculation.Keys.BUF_GT.getId()) {
+            System.out.print("start -" + t.getKeysText() + "\n");
             double num[] = new double[calculations.get(0).getStat().get(t).size()];
+            double avg, sum = 0;
             double averageNum[] = new double[calculations.get(0).getStat().get(t).size()];
             for (int _i = 0; _i < num.length; _i++) {
+                
                 for (int _j = 0; _j < full.getStat().get(t).size() / num.length; _j++) {
-                    num[_i] += full.getStat().get(t).get(_i*calculations.size()+_j).doubleValue();
+                    if (full.getStat().get(t).get(_i * calculations.size() + _j) != null) {
+                        num[_i] += full.getStat().get(t).get(_i * calculations.size() + _j).doubleValue();
+                    }
                 }
+                //System.out.print("tp1 -" + t.getKeysText() + "nr: " + _i + "\n");
                 averageNum[_i] = num[_i] / calculations.size();
                 finalStat.getStat().get(t).add(averageNum[_i]);
+                sum += averageNum[_i];
             }
-        }
-        
-        for (Calculation.Keys t : Calculation.Keys.values()) {
-            double avg,sum = 0;
-            for(int i = 0; i < finalStat.getStat().get(t).size(); i++) {
-                sum += finalStat.getStat().get(t).get(i).doubleValue();
-            }
-            avg = sum/finalStat.getStat().get(t).size();
+            
+            avg = sum / finalStat.getStat().get(t).size();
             averageStat.getStat().get(t).add(avg);
-           
+            System.out.print("end -" + t.getKeysText() + "\n");
         }
+        }
+        //System.out.print("tp2 \n");
     }
 
     public void clear() {
@@ -73,10 +78,8 @@ public class GlobalCalculation {
         String header = "========= FINAL ===========\n";
         return header + finalStat.printStatistics();
     }
-    
+
     public String printCSV() {
-        compute();
-        
-        return finalStat.printCsv() + "\n" + averageStat.printCsv();
+        return finalStat.printCsv() + "\n" +  averageStat.printCsv();
     }
 }

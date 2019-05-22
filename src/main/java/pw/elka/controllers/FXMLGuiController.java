@@ -70,7 +70,7 @@ public class FXMLGuiController implements Initializable {
             }
         };
         print = new PrintStream(out);
-        System.setOut(print);
+        //System.setOut(print);
         //System.setErr(print);
 
         repeats.textProperty().addListener(new ChangeListener<String>() {
@@ -92,23 +92,7 @@ public class FXMLGuiController implements Initializable {
                 }
             }
         });
-        lambda.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue,
-                    String newValue) {
-                if (!newValue.isEmpty()) {
-                    double lmb = Double.parseDouble(newValue);
-                    if (lmb < 0.5) {
-                        lambda.setText("0.5");
-                    }
-                    else if (lmb > 6) {
-                        lambda.setText("6");
-                    }
-                } else {
-                    lambda.setText("1");
-                }
-            }
-        });
+        
 
         file = new File(System.getProperty("user.dir") + "/simulation" + new Date().getTime() + ".csv");
         this.path.setText(file.getAbsolutePath());
@@ -149,12 +133,15 @@ public class FXMLGuiController implements Initializable {
             protected Void call() throws Exception {
                 simulator = new Simulator(Double.parseDouble(lambda.getText()), 0.8, 10, false, ref);
                 simulator.estimate(Integer.parseInt(repeats.getText()), Integer.parseInt(events.getText()));
-                System.out.print("Writing to file...\n");
+                
 
                 FileWriter fr = null;
+                simulator.compute();
+                String text = simulator.getCsv();
+                System.out.print("Writing to file...\n");
                 try {
                     fr = new FileWriter(file);
-                    fr.write(simulator.getCsv());
+                    fr.write(text);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
@@ -198,6 +185,6 @@ public class FXMLGuiController implements Initializable {
 
     @FXML
     private void clear(ActionEvent event) {
-        //this.console.clear();
+        this.console.clear();
     }
 }

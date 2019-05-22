@@ -151,4 +151,7 @@ public class Simulator {
     public String getCsv() {
         return globalStatistic.printCSV();
     }
+    public void compute() {
+        globalStatistic.compute();
+    }
 }
