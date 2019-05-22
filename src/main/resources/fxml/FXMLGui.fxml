@@ -8,7 +8,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="655.0" prefWidth="644.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pw.elka.controllers.FXMLGuiController">
+<AnchorPane id="AnchorPane" prefHeight="655.0" prefWidth="856.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pw.elka.controllers.FXMLGuiController">
     <stylesheets>
         <URL value="@/styles/fxmlgui.css" />
     </stylesheets>
@@ -33,9 +33,9 @@
          </font>
       </TextArea>
       <CheckBox layoutX="201.0" layoutY="308.0" mnemonicParsing="false" onAction="#toggleConsole" selected="true" text="Show console" AnchorPane.leftAnchor="201.0" AnchorPane.rightAnchor="199.0" />
-      <TextField fx:id="repeats" layoutX="226.0" layoutY="146.0" prefHeight="25.0" prefWidth="57.0" text="10" />
+      <TextField fx:id="repeats" layoutX="226.0" layoutY="146.0" prefHeight="25.0" prefWidth="57.0" text="1" />
       <Label layoutX="166.0" layoutY="150.0" prefHeight="17.0" text="Repeats:" />
       <Label layoutX="327.0" layoutY="150.0" prefHeight="17.0" text="Events:" />
-      <TextField fx:id="events" layoutX="380.0" layoutY="146.0" prefHeight="25.0" prefWidth="57.0" text="10" />
+      <TextField fx:id="events" layoutX="380.0" layoutY="146.0" prefHeight="25.0" prefWidth="57.0" text="3" />
    </children>
 </AnchorPane>

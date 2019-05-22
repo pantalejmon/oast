@@ -6,13 +6,16 @@
 package pw.elka.controllers;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
+import java.util.Date;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -75,7 +78,7 @@ public class FXMLGuiController implements Initializable {
                 }
             }
         });
-        
+
         events.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue,
@@ -85,8 +88,8 @@ public class FXMLGuiController implements Initializable {
                 }
             }
         });
-        
-        file = new File(System.getProperty("user.dir") + "/simulation.oast");
+
+        file = new File(System.getProperty("user.dir") + "/simulation"+new Date().getTime() + ".csv");
         this.path.setText(file.getAbsolutePath());
     }
 
@@ -100,7 +103,7 @@ public class FXMLGuiController implements Initializable {
                 new File(System.getProperty("user.dir"))
         );
         chooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Output", "*.oast"));
+                new FileChooser.ExtensionFilter("Output", "*.csv"));
         chooser.setInitialFileName("simulation");
         file = chooser.showSaveDialog(new Stage());
         if (file != null) {
@@ -110,7 +113,7 @@ public class FXMLGuiController implements Initializable {
     }
 
     @FXML
-    private void startSim(ActionEvent event) {
+    private void startSim(ActionEvent event) throws CloneNotSupportedException {
         //Tutaj bedzie kolejna logika wołana
         if (file == null) {
             System.out.print("Please select output file first\n");
@@ -118,10 +121,34 @@ public class FXMLGuiController implements Initializable {
         }
         System.out.print("Starting simulation...\n");
         // TODO jak skończysz to zapisz do pliku stat, tam jest metoda co zwraca stringa
-        simulator = new Simulator(0.8, 10, false,this);
-        simulator.estimate(Integer.parseInt(repeats.getText()), Integer.parseInt(events.getText()));
-        simulator.printList();
-        System.out.print("Writing to file...\n");
+        FXMLGuiController ref = this;
+        this.progress.setProgress(0);
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                simulator = new Simulator(0.8, 10, false, ref);
+                simulator.estimate(Integer.parseInt(repeats.getText()), Integer.parseInt(events.getText()));
+                System.out.print("Writing to file...\n");
+
+                FileWriter fr = null;
+                try {
+                    fr = new FileWriter(file);
+                    fr.write(simulator.getCsv());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    //close resources
+                    try {
+                        fr.close();
+                        System.out.print("Write success\n");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                return null;
+            }
+        };
+        new Thread(task).start();
 
     }
 
@@ -141,7 +168,7 @@ public class FXMLGuiController implements Initializable {
             console.setVisible(true);
         }
     }
-    
+
     public void setProgress(double progress) {
         this.progress.setProgress(progress);
     }

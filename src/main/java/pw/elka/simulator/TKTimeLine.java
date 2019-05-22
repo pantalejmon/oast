@@ -10,10 +10,8 @@ import java.util.Random;
  */
 public class TKTimeLine {
 
-    /**
-     *
-     */
     private LinkedList<TKEvent> timeLine;
+    private int seed;
 
     public TKTimeLine() {
         timeLine = new LinkedList<>();
@@ -46,23 +44,24 @@ public class TKTimeLine {
     public void generate(long n, double lmd, double mi, double seed) {
         double at = 0, rt = 0;
         this.timeLine.clear(); // Czyszcze liste
+        Random rand = new Random((long) seed);
         for (int i = 0; i < n; ++i) {
-            rt = exponentialGenerator((long) seed, mi);
+            rt = exponentialGenerator(rand, mi);
             this.timeLine.add(new TKEvent(at, rt));
-            at += exponentialGenerator((long) seed, lmd);
+            at += exponentialGenerator(rand, lmd);
         }
     }
 
-    public double exponentialGenerator(long seed, double param) {
-        Random rand = new Random();
+    public double exponentialGenerator(Random rand, double param) {
+
         //System.out.println("rand: " + rand.nextDouble());
         return Math.log(1 - rand.nextDouble()) / (-param);
     }
-    
+
     public void print() {
-        
+
         System.out.println("Number of events: " + this.timeLine.size());
-        for(TKEvent t : this.timeLine){
+        for (TKEvent t : this.timeLine) {
             System.out.println("AT: " + t.getTimeOfArrival().doubleValue() + " RT: " + t.getTimeOfResidence().doubleValue() + " Status: " + t.getEventStatus().getStatusText());
         }
         System.out.println("____________________________");

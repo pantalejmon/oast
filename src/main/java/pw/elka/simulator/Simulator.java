@@ -15,7 +15,8 @@ public class Simulator {
     private double lmd, mi, prevArrivalTime, waitingTime;
     boolean rej;
     private long queueLen, queueCount, service, eventQuantity;
-    private Calculation calculation, globalStatistic;
+    private Calculation calculation;
+    private GlobalCalculation globalStatistic;
     private final FXMLGuiController controller;
 
     public Simulator(double ro, long ql, boolean rej, FXMLGuiController con) {
@@ -31,11 +32,11 @@ public class Simulator {
         this.pastTL = new TKTimeLine();
         this.pendingTL = new TKTimeLine();
         this.calculation = new Calculation();
-        this.globalStatistic = new Calculation();
+        this.globalStatistic = new GlobalCalculation();
         this.controller = con;
     }
 
-    public void createEventList(long liczba, double seed) {
+    public void createEventList(long liczba, int seed) {
         this.service = 0;
         this.queueCount = 0;
         this.prevArrivalTime = 0;
@@ -44,23 +45,27 @@ public class Simulator {
     }
 
     // ToDo: nazwa jest na razie jak u Olka
-    public void estimate(int numberOfRepeats, int numberOfEvents) {
+    public void estimate(int numberOfRepeats, int numberOfEvents) throws CloneNotSupportedException {
+        globalStatistic.clear();                        // Czyszczenie global statistic
         for (int i = 0; i < numberOfRepeats; ++i) {
             double p =(double) (i + 1) / numberOfRepeats;
-            this.controller.setProgress(p);
-            createEventList(numberOfEvents, i);
-            //this.printList();
-            servEvent();
-            globalStatistic.addStat(calculation);
-
-            calculation.clear();
-
+            
+            Platform.runLater(()->{
+                this.controller.setProgress(p);
+            });
+            createEventList(numberOfEvents, i);             // Utworzenie listy zdarzeń
+            servEvent();                                 // Obsługa zdarzeń
+            //System.out.print(calculation.printStatistics()); 
+            globalStatistic.addStat(calculation);        // Dodanie statystyk
+            calculation.clear();                         // Czyszczenie obliczeń
         }
-        System.out.print(globalStatistic.printStatistics());
-        
+        //System.out.print(globalStatistic.printStatistics());    // Wydruk kontrolny 
+        //System.out.print(globalStatistic.printCSV()); 
     }
 
     public void servEvent() {
+        //System.out.println("Rozpoczynam obliczanie");
+        //System.out.println("Ilosc zdarzen:" + this.pastTL.getLength());
         while (this.pastTL.getLength() > 0 || this.pendingTL.getLength() > 0) {
             if (this.service == 0) {
                 if (pendingTL.getLength() > 0) {
@@ -77,22 +82,23 @@ public class Simulator {
     }
 
     public void servCreated() {
-        //System.out.println("servCreated()");
-        TKEvent event = pastTL.get();
+       // Nowe zdarzenia
+        TKEvent event = pastTL.get(); // Pobranie zdarzenia
+        //System.out.println("servCreated() zdarzenia o czasie obslugi:" + event.getTimeOfResidence());
         waitingTime = 0;
-        calculation.addCasQueue(queueCount);
-        //System.out.println("Dodaje do que wartosc:"+ queueCount);
+        calculation.addCasQueue(queueCount);    
         calculation.addCasSys(queueCount);
         calculation.addWaitTime(prevArrivalTime, event.getTimeOfArrival().doubleValue());
         service = 1;
+        
         event.set((event.getTimeOfArrival().doubleValue() + event.getTimeOfResidence().doubleValue()),
                 TKEvent.Status.PROCESSING.getStatusText());
         pastTL.put(event);
     }
-
+    // Zdarzenia w buforze
     public void servPending() {
-        //System.out.println("servPending()");
         TKEvent event = pendingTL.get();
+       // System.out.println("servPending() Obsługa zdarzenie o czasie obslugi:" + event.getTimeOfResidence());
         waitingTime = calculation.addWaitTime(prevArrivalTime, event.getTimeOfArrival().doubleValue());
         event.set(prevArrivalTime + event.getTimeOfResidence().doubleValue(),
                 TKEvent.Status.PROCESSING.getStatusText());
@@ -102,13 +108,16 @@ public class Simulator {
     }
 
     public void servServiced() {
-        //System.out.println("servServiced()");
+        
+        // Koniec obsługi
         TKEvent event = pastTL.get();
         if (event.getEventStatus().getStatusText().equals(TKEvent.Status.PROCESSING.getStatusText())) {
+            //System.out.println("servServiced() Koniec obsługi zdarzenia o czasie obslugi:" + event.getTimeOfResidence());
             service = 0;
             calculation.addPocTime(waitingTime, event.getTimeOfResidence().doubleValue());
             prevArrivalTime = event.getTimeOfArrival().doubleValue();
-        } else if (event.getEventStatus().getStatusText().equals(TKEvent.Status.CREATED.getStatusText())) {
+        } else if (event.getEventStatus().getStatusText().equals(TKEvent.Status.CREATED.getStatusText())) {//Dodanie zdarzenia do listy zdarzeń oczekujacych 
+            //System.out.println("servServiced() Wrzucanie zdarzenia do oczekujacych o czasie obslugi:" + event.getTimeOfResidence());
             calculation.addCasQueue(queueCount);
             calculation.addCasSys(queueCount + service);
             event.set(-1, TKEvent.Status.PENDING.getStatusText());
@@ -123,6 +132,10 @@ public class Simulator {
             pendingTL.put(event);
         }
     }
+    
+    public void AddSystemCrash(int numberOfCrash) {
+        
+    }
 
     public void printList() {
         pastTL.print();
@@ -134,5 +147,8 @@ public class Simulator {
 
     public void printGlobStat(int numElem) {
         this.globalStatistic.printStatistics();
+    }
+    public String getCsv() {
+        return globalStatistic.printCSV();
     }
 }

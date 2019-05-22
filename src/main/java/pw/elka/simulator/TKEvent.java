@@ -47,6 +47,7 @@ public class TKEvent {
         this.eventStatus = Status.CREATED;
         this.timeOfArrival = timeOfArrival;
         this.timeOfResidence = timeOfResidence;
+        //System.out.println("Zdarznie o czasie przyjscia: "+ timeOfArrival + " Czasie obslugi: " + timeOfResidence);
     }
     
     

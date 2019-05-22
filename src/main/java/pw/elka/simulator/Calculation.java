@@ -14,7 +14,7 @@ import java.util.LinkedList;
  */
 public class Calculation {
 
-    enum Keys {
+    public enum Keys {
         CUSTOMERS_IN_QUEUE("customers_in_queue", 0),
         CUSTOMERS_IN_SYSTEM("customers_in_system", 1),
         WAITING_TIME("waiting_time", 2),
@@ -57,7 +57,7 @@ public class Calculation {
         }
     }
 
-    LinkedHashMap<Keys, LinkedList<Number>> stat = new LinkedHashMap<>();
+    protected LinkedHashMap<Keys, LinkedList<Number>> stat = new LinkedHashMap<>();
 
     public Calculation() {
         for (Keys k : Keys.values()) {
@@ -95,8 +95,7 @@ public class Calculation {
         double c = Math.max(0, prevEvEndTime - arrivalTime);
         if (!this.stat.get(Keys.WAITING_TIME).isEmpty()) {
             this.stat.get(Keys.WAITING_TIME).addFirst(this.stat.get(Keys.CUSTOMERS_IN_QUEUE).getFirst().doubleValue() + c);
-        }
-        else {
+        } else {
             this.stat.get(Keys.WAITING_TIME).addFirst(c);
         }
         return c;
@@ -106,7 +105,7 @@ public class Calculation {
         double c = sojourTime + waitTime;
         if (!this.stat.get(Keys.PROCESSING_TIME).isEmpty()) {
             this.stat.get(Keys.PROCESSING_TIME).addFirst(this.stat.get(Keys.CUSTOMERS_IN_QUEUE).getFirst().doubleValue() + c);
-        }else {
+        } else {
             this.stat.get(Keys.PROCESSING_TIME).addFirst(c);
         }
     }
@@ -114,8 +113,7 @@ public class Calculation {
     public void addRejCount() {
         if (!this.stat.get(Keys.REJECTED_COUNTER).isEmpty()) {
             this.stat.get(Keys.REJECTED_COUNTER).addFirst(this.stat.get(Keys.CUSTOMERS_IN_QUEUE).getFirst().doubleValue() + 1);
-        }
-        else {
+        } else {
             this.stat.get(Keys.REJECTED_COUNTER).addFirst(1);
         }
     }
@@ -123,8 +121,7 @@ public class Calculation {
     public void addBuffGT() {
         if (!this.stat.get(Keys.BUF_GT).isEmpty()) {
             this.stat.get(Keys.BUF_GT).addFirst(this.stat.get(Keys.CUSTOMERS_IN_QUEUE).getFirst().doubleValue() + 1);
-        }
-        else {
+        } else {
             this.stat.get(Keys.BUF_GT).addFirst(1);
         }
     }
@@ -155,12 +152,36 @@ public class Calculation {
             }
             output += "\n";
         }
-        System.out.print(output);
+        //System.out.print(output);
         return output;
+    }
+
+    public String printCsv() {
+        String output = ";";
+        for (int i = 0; i < this.stat.get(Keys.CUSTOMERS_IN_QUEUE).size(); i++) {
+            output += "" + i + ";";
+        }
+        output += "\n";
+        for (Keys k : Keys.values()) {
+            output += k.getKeysText() + "; ";
+            for (int i = 0; i < this.stat.get(k).size(); i++) {
+                output += "" + this.stat.get(k).get(i) + ";";
+            }
+            output += "\n";
+        }
+        //System.out.print(output);
+        return output;
+    }
+
+    public Calculation clone() {
+        Calculation newCalc = new Calculation();
+        for (Keys k : Keys.values()) {
+            newCalc.getStat().get(k).addAll(this.stat.get(k));
+        }
+        return newCalc;
     }
 
     public LinkedHashMap<Keys, LinkedList<Number>> getStat() {
         return stat;
     }
-
 }
