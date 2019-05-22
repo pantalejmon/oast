@@ -18,9 +18,7 @@ public class Calculation {
         CUSTOMERS_IN_QUEUE("customers_in_queue", 0),
         CUSTOMERS_IN_SYSTEM("customers_in_system", 1),
         WAITING_TIME("waiting_time", 2),
-        PROCESSING_TIME("proceeding_time", 3),
-        REJECTED_COUNTER("rejected_counter", 4),
-        BUF_GT("buf_gt", 5);
+        PROCESSING_TIME("proceeding_time", 3);
 
         private String keysText;
         private int id;
@@ -58,6 +56,7 @@ public class Calculation {
     }
 
     protected LinkedHashMap<Keys, LinkedList<Number>> stat = new LinkedHashMap<>();
+    protected double computeWaitTime = 0;
 
     public Calculation() {
         for (Keys k : Keys.values()) {
@@ -67,8 +66,8 @@ public class Calculation {
 
     // TODO narazie nazwy jak u olka, potem zrobimy refactor
     public double back(String k) {
-        Keys ke = Keys.fromString(k);
-        return this.stat.get(ke).getLast().doubleValue();
+        Keys ke = Keys.fromString(k);     
+        return this.stat.get(ke).removeLast().doubleValue();
     }
 
     public void appendCasQueue(int q) {
@@ -76,8 +75,11 @@ public class Calculation {
     }
 
     public void addCasQueue(double c) {
+
         if (!this.stat.get(Keys.CUSTOMERS_IN_QUEUE).isEmpty()) {
-            this.stat.get(Keys.CUSTOMERS_IN_QUEUE).addFirst(this.stat.get(Keys.CUSTOMERS_IN_QUEUE).getFirst().doubleValue() + c);
+            double x = this.stat.get(Keys.CUSTOMERS_IN_QUEUE).removeFirst().doubleValue() + c;
+            this.stat.get(Keys.CUSTOMERS_IN_QUEUE).clear();
+            this.stat.get(Keys.CUSTOMERS_IN_QUEUE).addFirst(x);
         } else {
             this.stat.get(Keys.CUSTOMERS_IN_QUEUE).addFirst(c);
         }
@@ -85,7 +87,9 @@ public class Calculation {
 
     public void addCasSys(double c) {
         if (!this.stat.get(Keys.CUSTOMERS_IN_SYSTEM).isEmpty()) {
-            this.stat.get(Keys.CUSTOMERS_IN_SYSTEM).addFirst(this.stat.get(Keys.CUSTOMERS_IN_QUEUE).getFirst().doubleValue() + c);
+            double x = this.stat.get(Keys.CUSTOMERS_IN_SYSTEM).removeFirst().doubleValue() + c;
+            this.stat.get(Keys.CUSTOMERS_IN_SYSTEM).clear();
+            this.stat.get(Keys.CUSTOMERS_IN_SYSTEM).addFirst(x);
         } else {
             this.stat.get(Keys.CUSTOMERS_IN_SYSTEM).addFirst(c);
         }
@@ -94,7 +98,9 @@ public class Calculation {
     public double addWaitTime(double prevEvEndTime, double arrivalTime) {
         double c = Math.max(0, prevEvEndTime - arrivalTime);
         if (!this.stat.get(Keys.WAITING_TIME).isEmpty()) {
-            this.stat.get(Keys.WAITING_TIME).addFirst(this.stat.get(Keys.CUSTOMERS_IN_QUEUE).getFirst().doubleValue() + c);
+            
+            this.stat.get(Keys.WAITING_TIME).add(c);
+            
         } else {
             this.stat.get(Keys.WAITING_TIME).addFirst(c);
         }
@@ -104,25 +110,11 @@ public class Calculation {
     public void addPocTime(double waitTime, double sojourTime) {
         double c = sojourTime + waitTime;
         if (!this.stat.get(Keys.PROCESSING_TIME).isEmpty()) {
-            this.stat.get(Keys.PROCESSING_TIME).addFirst(this.stat.get(Keys.CUSTOMERS_IN_QUEUE).getFirst().doubleValue() + c);
+            
+            this.stat.get(Keys.PROCESSING_TIME).add(c);
+            
         } else {
             this.stat.get(Keys.PROCESSING_TIME).addFirst(c);
-        }
-    }
-
-    public void addRejCount() {
-        if (!this.stat.get(Keys.REJECTED_COUNTER).isEmpty()) {
-            this.stat.get(Keys.REJECTED_COUNTER).addFirst(this.stat.get(Keys.CUSTOMERS_IN_QUEUE).getFirst().doubleValue() + 1);
-        } else {
-            this.stat.get(Keys.REJECTED_COUNTER).addFirst(1);
-        }
-    }
-
-    public void addBuffGT() {
-        if (!this.stat.get(Keys.BUF_GT).isEmpty()) {
-            this.stat.get(Keys.BUF_GT).addFirst(this.stat.get(Keys.CUSTOMERS_IN_QUEUE).getFirst().doubleValue() + 1);
-        } else {
-            this.stat.get(Keys.BUF_GT).addFirst(1);
         }
     }
 
@@ -180,7 +172,30 @@ public class Calculation {
         }
         return newCalc;
     }
-
+    
+    public double computeWaitTime() {
+        double avg=0, sum=0;
+        //System.out.print("Wywoluje avg:" + "\n");
+        for(Number x : stat.get(Keys.WAITING_TIME)){
+            sum += x.doubleValue();
+        }
+        avg = sum/stat.get(Keys.WAITING_TIME).size();
+        //System.out.print("avg:" + avg + "\n");
+        return avg;
+    }
+    
+    public double computeProcessingTime() {
+        double avg=0, sum=0;
+        //System.out.print("Wywoluje avg:" + "\n");
+        for(Number x : stat.get(Keys.PROCESSING_TIME)){
+            sum += x.doubleValue();
+        }
+        avg = sum/stat.get(Keys.PROCESSING_TIME).size();
+        //System.out.print("avg:" + avg + "\n");
+        return avg;
+    }
+    
+    
     public LinkedHashMap<Keys, LinkedList<Number>> getStat() {
         return stat;
     }

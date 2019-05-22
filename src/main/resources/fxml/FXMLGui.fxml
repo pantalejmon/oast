@@ -33,10 +33,10 @@
          </font>
       </TextArea>
       <CheckBox layoutX="201.0" layoutY="308.0" mnemonicParsing="false" onAction="#toggleConsole" selected="true" text="Show console" AnchorPane.leftAnchor="201.0" AnchorPane.rightAnchor="199.0" />
-      <TextField fx:id="repeats" layoutX="103.0" layoutY="146.0" prefHeight="25.0" prefWidth="57.0" text="50" />
+      <TextField fx:id="repeats" layoutX="103.0" layoutY="146.0" prefHeight="25.0" prefWidth="57.0" text="100" />
       <Label layoutX="43.0" layoutY="150.0" prefHeight="17.0" text="Repeats:" />
       <Label layoutX="184.0" layoutY="150.0" prefHeight="17.0" text="Events:" />
-      <TextField fx:id="events" layoutX="237.0" layoutY="146.0" prefHeight="25.0" prefWidth="57.0" text="50" />
+      <TextField fx:id="events" layoutX="237.0" layoutY="146.0" prefHeight="25.0" prefWidth="57.0" text="100" />
       <TextField fx:id="lambda" layoutX="372.0" layoutY="146.0" prefHeight="25.0" prefWidth="57.0" text="1" />
       <Label layoutX="316.0" layoutY="150.0" prefHeight="17.0" text="Lambda:" />
       <Button layoutX="707.0" layoutY="315.0" mnemonicParsing="false" onAction="#clear" prefHeight="25.0" prefWidth="107.0" text="Clear console" />

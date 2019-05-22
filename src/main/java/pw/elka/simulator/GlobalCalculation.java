@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import javafx.application.Platform;
 
 /**
  *
@@ -27,43 +28,38 @@ public class GlobalCalculation {
     }
 
     public void compute() {
-        System.out.print("Computing...\n");
+        Platform.runLater(()->{
+             System.out.print("Computing...\n");
+        });
+       
         Calculation full = new Calculation();
-//        System.out.print("Liczba powtorzen do obliczenia sredniej: " + calculations.size() + "\n");
+        this.finalStat = new Calculation();
         for (Calculation c : calculations) {
 //            System.out.print("-----------do wgrania--------------" + "\n");
 //            System.out.print(c.printStatistics());
             for (Calculation.Keys t : Calculation.Keys.values()) {
-                full.getStat().get(t).addAll(c.getStat().get(t));
-
-            }
-        }
-//        System.out.print("-----------suma--------------" + "\n");
-//        System.out.print(full.printStatistics());
-        //System.out.print("tp1\n");
-        for (Calculation.Keys t : Calculation.Keys.values()) {
-            if(t.getId() != Calculation.Keys.BUF_GT.getId()) {
-            //System.out.print("start -" + t.getKeysText() + "\n");
-            double num[] = new double[calculations.get(0).getStat().get(t).size()];
-            double avg, sum = 0;
-            double averageNum[] = new double[calculations.get(0).getStat().get(t).size()];
-            for (int _i = 0; _i < num.length; _i++) {
-                
-                for (int _j = 0; _j < full.getStat().get(t).size() / num.length; _j++) {
-                    if (full.getStat().get(t).get(_i * calculations.size() + _j) != null) {
-                        num[_i] += full.getStat().get(t).get(_i * calculations.size() + _j).doubleValue();
-                    }
+                if (t.getId() == Calculation.Keys.WAITING_TIME.getId()) {
+                    full.getStat().get(t).add(c.computeWaitTime());
+                }else if (t.getId() == Calculation.Keys.PROCESSING_TIME.getId()){
+                    full.getStat().get(t).add(c.computeProcessingTime());
                 }
-                //System.out.print("tp1 -" + t.getKeysText() + "nr: " + _i + "\n");
-                averageNum[_i] = num[_i] / calculations.size();
-                finalStat.getStat().get(t).add(averageNum[_i]);
-                sum += averageNum[_i];
+                else {
+                    full.getStat().get(t).addAll(c.getStat().get(t));
+                }
             }
-            
-            avg = sum / finalStat.getStat().get(t).size();
-            averageStat.getStat().get(t).add(avg);
-            //System.out.print("end -" + t.getKeysText() + "\n");
         }
+        for (Calculation.Keys t : Calculation.Keys.values()) {
+            double avg, sum = 0;
+            for (int _j = 0; _j < full.getStat().get(t).size(); _j++) {
+                if (full.getStat().get(t).get(_j) != null) {
+                    sum += full.getStat().get(t).get(_j).doubleValue();
+                }
+            }
+            avg = sum / calculations.size();
+            //System.out.print("sum:" + sum+ "avg: "+avg);
+            finalStat.getStat().get(t).add(avg);
+
+            //System.out.print("end -" + t.getKeysText() + "\n");
         }
         //System.out.print("tp2 \n");
     }
@@ -80,6 +76,6 @@ public class GlobalCalculation {
     }
 
     public String printCSV() {
-        return finalStat.printCsv() + "\n" +  averageStat.printCsv();
+        return finalStat.printCsv() + "\n";
     }
 }

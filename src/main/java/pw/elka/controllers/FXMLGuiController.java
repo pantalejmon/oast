@@ -13,6 +13,7 @@ import java.io.PrintStream;
 import java.net.URL;
 import java.util.Date;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
@@ -139,7 +140,9 @@ public class FXMLGuiController implements Initializable {
                 FileWriter fr = null;
                 simulator.compute();
                 String text = simulator.getCsv();
-                System.out.print("Writing to file...\n");
+                Platform.runLater(()->{
+                    System.out.print("Writing to file...\n");
+                });
                 try {
                     fr = new FileWriter(file);
                     fr.write(text);
@@ -149,7 +152,7 @@ public class FXMLGuiController implements Initializable {
                     //close resources
                     try {
                         fr.close();
-                        System.out.print("Write success\n");
+                        //System.out.print("Write success\n");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
