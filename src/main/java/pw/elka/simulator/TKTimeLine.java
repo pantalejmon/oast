@@ -51,6 +51,21 @@ public class TKTimeLine {
             at += exponentialGenerator(rand, lmd);
         }
     }
+    
+    public void generateCrashes(TKTimeLine events) {
+        double at = 0, rt = 0;
+        this.timeLine.clear(); // Czyszcze liste
+        //System.out.println("Generuje crashe start");
+        Random rand = new Random();
+        while(at < (events.getLast().getTimeOfArrival().doubleValue() + events.getLast().getTimeOfResidence().doubleValue() )){
+            double t = 0.02857142857142857;
+            rt = exponentialGenerator(rand, t);
+            //System.out.println("Generuje crashe");
+            t = 0.025;
+            at += exponentialGenerator(rand, t);
+            this.timeLine.add(new TKEvent(at,rt , TKEvent.Status.CRASHED));
+        }
+    }
 
     public double exponentialGenerator(Random rand, double param) {
 
@@ -65,5 +80,8 @@ public class TKTimeLine {
             System.out.println("AT: " + t.getTimeOfArrival().doubleValue() + " RT: " + t.getTimeOfResidence().doubleValue() + " Status: " + t.getEventStatus().getStatusText());
         }
         System.out.println("____________________________");
+    }
+    public TKEvent getLast() {
+        return this.timeLine.getLast();
     }
 }

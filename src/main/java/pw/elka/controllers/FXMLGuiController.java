@@ -19,6 +19,7 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -51,9 +52,9 @@ public class FXMLGuiController implements Initializable {
     @FXML
     private TextField events;
     @FXML
-    private TextField craches;
-    @FXML
     private TextField lambda;
+    @FXML
+    private CheckBox crashes;
 
     /**
      * Initializes the controller class.
@@ -132,9 +133,7 @@ public class FXMLGuiController implements Initializable {
             @Override
             protected Void call() throws Exception {
                 simulator = new Simulator(Double.parseDouble(lambda.getText()), 0.8, 10, false, ref);
-                simulator.estimate(Integer.parseInt(repeats.getText()), Integer.parseInt(events.getText()));
-                
-
+                simulator.estimate(Integer.parseInt(repeats.getText()), Integer.parseInt(events.getText()), crashes.isSelected());
                 FileWriter fr = null;
                 simulator.compute();
                 String text = simulator.getCsv();

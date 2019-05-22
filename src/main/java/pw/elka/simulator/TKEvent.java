@@ -8,7 +8,8 @@ public class TKEvent {
     enum Status {
         CREATED("created"),
         PENDING("pending"),
-        PROCESSING("processing");
+        PROCESSING("processing"),
+        CRASHED("crashed");
         
         private String statusText;
         
@@ -45,6 +46,13 @@ public class TKEvent {
 
     public TKEvent(double timeOfArrival, double timeOfResidence) {
         this.eventStatus = Status.CREATED;
+        this.timeOfArrival = timeOfArrival;
+        this.timeOfResidence = timeOfResidence;
+        //System.out.println("Zdarznie o czasie przyjscia: "+ timeOfArrival + " Czasie obslugi: " + timeOfResidence);
+    }
+    
+    public TKEvent(double timeOfArrival, double timeOfResidence, Status status) {
+        this.eventStatus = status;
         this.timeOfArrival = timeOfArrival;
         this.timeOfResidence = timeOfResidence;
         //System.out.println("Zdarznie o czasie przyjscia: "+ timeOfArrival + " Czasie obslugi: " + timeOfResidence);

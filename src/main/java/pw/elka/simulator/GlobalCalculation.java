@@ -43,7 +43,7 @@ public class GlobalCalculation {
         //System.out.print("tp1\n");
         for (Calculation.Keys t : Calculation.Keys.values()) {
             if(t.getId() != Calculation.Keys.BUF_GT.getId()) {
-            System.out.print("start -" + t.getKeysText() + "\n");
+            //System.out.print("start -" + t.getKeysText() + "\n");
             double num[] = new double[calculations.get(0).getStat().get(t).size()];
             double avg, sum = 0;
             double averageNum[] = new double[calculations.get(0).getStat().get(t).size()];
@@ -62,7 +62,7 @@ public class GlobalCalculation {
             
             avg = sum / finalStat.getStat().get(t).size();
             averageStat.getStat().get(t).add(avg);
-            System.out.print("end -" + t.getKeysText() + "\n");
+            //System.out.print("end -" + t.getKeysText() + "\n");
         }
         }
         //System.out.print("tp2 \n");
