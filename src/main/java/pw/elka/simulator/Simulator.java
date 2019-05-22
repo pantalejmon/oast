@@ -58,7 +58,7 @@ public class Simulator {
             createEventList(numberOfEvents, i);             // Utworzenie listy zdarzeń
             if (crashes) {
                 this.crashesTL.generateCrashes(pastTL);
-                System.out.println("Wygenerowano zawiechy");
+                //System.out.println("Wygenerowano zawiechy");
                 //this.crashesTL.print();
             }
             servEvent();                                 // Obsługa zdarzeń

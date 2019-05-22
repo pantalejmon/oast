@@ -71,7 +71,7 @@ public class FXMLGuiController implements Initializable {
             }
         };
         print = new PrintStream(out);
-        //System.setOut(print);
+        System.setOut(print);
         //System.setErr(print);
 
         repeats.textProperty().addListener(new ChangeListener<String>() {
