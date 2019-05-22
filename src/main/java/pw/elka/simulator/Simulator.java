@@ -19,8 +19,8 @@ public class Simulator {
     private GlobalCalculation globalStatistic;
     private final FXMLGuiController controller;
 
-    public Simulator(double ro, long ql, boolean rej, FXMLGuiController con) {
-        this.lmd = 1;
+    public Simulator(double lambda, double ro, long ql, boolean rej, FXMLGuiController con) {
+        this.lmd = lambda;
         this.mi = 1 / ro;
         this.queueLen = ql;
         this.queueCount = 0;

@@ -37,5 +37,10 @@
       <Label layoutX="166.0" layoutY="150.0" prefHeight="17.0" text="Repeats:" />
       <Label layoutX="327.0" layoutY="150.0" prefHeight="17.0" text="Events:" />
       <TextField fx:id="events" layoutX="380.0" layoutY="146.0" prefHeight="25.0" prefWidth="57.0" text="3" />
+      <TextField fx:id="craches" layoutX="554.0" layoutY="146.0" prefHeight="25.0" prefWidth="57.0" text="0" />
+      <Label layoutX="462.0" layoutY="150.0" prefHeight="17.0" text="Server crashes:" />
+      <TextField fx:id="lambda" layoutX="692.0" layoutY="146.0" prefHeight="25.0" prefWidth="57.0" text="1" />
+      <Label layoutX="636.0" layoutY="150.0" prefHeight="17.0" text="Lambda:" />
+      <Button layoutX="707.0" layoutY="315.0" mnemonicParsing="false" onAction="#clear" prefHeight="25.0" prefWidth="107.0" text="Clear console" />
    </children>
 </AnchorPane>

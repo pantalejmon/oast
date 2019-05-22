@@ -50,6 +50,10 @@ public class FXMLGuiController implements Initializable {
     private TextField repeats;
     @FXML
     private TextField events;
+    @FXML
+    private TextField craches;
+    @FXML
+    private TextField lambda;
 
     /**
      * Initializes the controller class.
@@ -67,7 +71,7 @@ public class FXMLGuiController implements Initializable {
         };
         print = new PrintStream(out);
         System.setOut(print);
-        System.setErr(print);
+        //System.setErr(print);
 
         repeats.textProperty().addListener(new ChangeListener<String>() {
             @Override
@@ -88,8 +92,25 @@ public class FXMLGuiController implements Initializable {
                 }
             }
         });
+        lambda.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue,
+                    String newValue) {
+                if (!newValue.isEmpty()) {
+                    double lmb = Double.parseDouble(newValue);
+                    if (lmb < 0.5) {
+                        lambda.setText("0.5");
+                    }
+                    else if (lmb > 6) {
+                        lambda.setText("6");
+                    }
+                } else {
+                    lambda.setText("1");
+                }
+            }
+        });
 
-        file = new File(System.getProperty("user.dir") + "/simulation"+new Date().getTime() + ".csv");
+        file = new File(System.getProperty("user.dir") + "/simulation" + new Date().getTime() + ".csv");
         this.path.setText(file.getAbsolutePath());
     }
 
@@ -126,7 +147,7 @@ public class FXMLGuiController implements Initializable {
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                simulator = new Simulator(0.8, 10, false, ref);
+                simulator = new Simulator(Double.parseDouble(lambda.getText()), 0.8, 10, false, ref);
                 simulator.estimate(Integer.parseInt(repeats.getText()), Integer.parseInt(events.getText()));
                 System.out.print("Writing to file...\n");
 
@@ -145,6 +166,8 @@ public class FXMLGuiController implements Initializable {
                         e.printStackTrace();
                     }
                 }
+                file = new File(System.getProperty("user.dir") + "/simulation" + new Date().getTime() + ".csv");
+                ref.path.setText(file.getAbsolutePath());
                 return null;
             }
         };
@@ -171,5 +194,10 @@ public class FXMLGuiController implements Initializable {
 
     public void setProgress(double progress) {
         this.progress.setProgress(progress);
+    }
+
+    @FXML
+    private void clear(ActionEvent event) {
+        //this.console.clear();
     }
 }
