@@ -6,46 +6,36 @@
 package pw.elka.simulator;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import javafx.application.Platform;
 
 /**
+ * Klasa licząca średnią z obliczeń
  *
- * @author janek
+ * @author Jan Jakubik & Oskar Misiewicz
  */
 public class GlobalCalculation {
 
     private final List<Calculation> calculations = new ArrayList<>();
     private Calculation finalStat = new Calculation();
-    private Calculation averageStat = new Calculation();
 
     public void addStat(Calculation s) throws CloneNotSupportedException {
-//        System.out.print("-----------dodaje--------------" + "\n");
-//        System.out.print(s.printStatistics());
         calculations.add((Calculation) s.clone());
     }
 
     public void compute() {
-        Platform.runLater(()->{
-             System.out.print("Computing...\n");
-        });
        
         Calculation full = new Calculation();
         this.finalStat = new Calculation();
         for (Calculation c : calculations) {
-//            System.out.print("-----------do wgrania--------------" + "\n");
-//            System.out.print(c.printStatistics());
             for (Calculation.Keys t : Calculation.Keys.values()) {
                 if (t.getId() == Calculation.Keys.WAITING_TIME.getId()) {
-                   
+
                     full.getStat().get(t).add(c.computeWaitTime());
-                }else if (t.getId() == Calculation.Keys.PROCESSING_TIME.getId()){
-                    
+                } else if (t.getId() == Calculation.Keys.PROCESSING_TIME.getId()) {
+
                     full.getStat().get(t).add(c.computeProcessingTime());
-                }
-                else {
+                } else {
                     full.getStat().get(t).addAll(c.getStat().get(t));
                 }
             }
@@ -58,12 +48,8 @@ public class GlobalCalculation {
                 }
             }
             avg = sum / calculations.size();
-            //System.out.print("sum:" + sum+ "avg: "+avg);
             finalStat.getStat().get(t).add(avg);
-
-            //System.out.print("end -" + t.getKeysText() + "\n");
         }
-        //System.out.print("tp2 \n");
     }
 
     public void clear() {
@@ -74,7 +60,8 @@ public class GlobalCalculation {
     public String printStatistics() {
         compute();
         String header = "========= FINAL ===========\n";
-        return header + finalStat.printStatistics();
+        String footer = "=========================\n";
+        return header + finalStat.printCalculation() + footer;
     }
 
     public String printCSV() {

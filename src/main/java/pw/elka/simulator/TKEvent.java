@@ -4,19 +4,19 @@ package pw.elka.simulator;
  * TKEvent
  */
 public class TKEvent {
-    
-    enum Status {
+
+    public enum Status {
         CREATED("created"),
         PENDING("pending"),
         PROCESSING("processing"),
         CRASHED("crashed");
-        
+
         private String statusText;
-        
+
         private Status(String statusText) {
             this.statusText = statusText;
         }
-        
+
         public String getStatusText() {
             return statusText;
         }
@@ -30,18 +30,15 @@ public class TKEvent {
             return null;
         }
     }
-    
+
     private Number timeOfArrival; // Chyba nie ma co dawac tu final
     private final Number timeOfResidence;
-    // ToDo: Dodać możliwe wartości statusu i ewentualnie zmienić jego typ
     private Status eventStatus;
-    private  TKEventType type;
-    
-    public TKEvent(Number timeOfArrival, Number timeOfResidence, String eventStatus, TKEventType type) {
+
+    public TKEvent(Number timeOfArrival, Number timeOfResidence, String eventStatus) {
         this.timeOfArrival = timeOfArrival;
         this.timeOfResidence = timeOfResidence;
         this.eventStatus = Status.fromString(eventStatus);
-        this.type = type;
     }
 
     public TKEvent(double timeOfArrival, double timeOfResidence) {
@@ -50,19 +47,18 @@ public class TKEvent {
         this.timeOfResidence = timeOfResidence;
         //System.out.println("Zdarznie o czasie przyjscia: "+ timeOfArrival + " Czasie obslugi: " + timeOfResidence);
     }
-    
+
     public TKEvent(double timeOfArrival, double timeOfResidence, Status status) {
         this.eventStatus = status;
         this.timeOfArrival = timeOfArrival;
         this.timeOfResidence = timeOfResidence;
         //System.out.println("Zdarznie o czasie przyjscia: "+ timeOfArrival + " Czasie obslugi: " + timeOfResidence);
     }
-    
-    
+
     public Number getTimeOfArrival() {
         return timeOfArrival;
     }
-    
+
     public Number getTimeOfResidence() {
         return timeOfResidence;
     }
@@ -70,18 +66,14 @@ public class TKEvent {
     public Status getEventStatus() {
         return eventStatus;
     }
-   
-    public TKEventType getType() {
-        return type;
-    }
-    
+
     public boolean earlierThan(TKEvent e) {
         return this.timeOfArrival.longValue() < e.getTimeOfArrival().longValue();
     }
-    
+
     public void set(Number arrival, String status) {
         this.eventStatus = Status.fromString(status);
-        this.timeOfArrival = (arrival.doubleValue() > 0) ?  arrival : this.timeOfArrival;
-    }            
+        this.timeOfArrival = (arrival.doubleValue() > 0) ? arrival : this.timeOfArrival;
+    }
 
 }

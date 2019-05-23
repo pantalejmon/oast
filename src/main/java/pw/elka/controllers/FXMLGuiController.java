@@ -31,8 +31,8 @@ import pw.elka.simulator.Simulator;
 
 /**
  * FXML Controller class
- *
- * @author janek
+ * Kontroler GUI
+ * @author Jan Jakubik & Oskar Misiewicz
  */
 public class FXMLGuiController implements Initializable {
 
@@ -135,8 +135,8 @@ public class FXMLGuiController implements Initializable {
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                simulator = new Simulator(Double.parseDouble(lambda.getText()), 0.125, false, ref);
-                simulator.estimate(Integer.parseInt(repeats.getText()), Integer.parseInt(events.getText()), crashes.isSelected(), uniform.isSelected());
+                simulator = new Simulator(Double.parseDouble(lambda.getText()), ref);
+                simulator.run(Integer.parseInt(repeats.getText()), Integer.parseInt(events.getText()), crashes.isSelected(), uniform.isSelected());
                 FileWriter fr = null;
                 simulator.compute();
                 String text = simulator.getCsv();

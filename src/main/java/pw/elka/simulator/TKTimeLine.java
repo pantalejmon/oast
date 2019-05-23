@@ -1,7 +1,5 @@
 package pw.elka.simulator;
 
-import java.awt.Event;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -10,7 +8,7 @@ import java.util.Random;
  */
 public class TKTimeLine {
 
-    private LinkedList<TKEvent> timeLine;
+    private final LinkedList<TKEvent> timeLine;
     private int seed;
 
     public TKTimeLine() {
@@ -55,7 +53,7 @@ public class TKTimeLine {
     public void generateUniform( long n ,double seed) {
         double at = 0, rt = 0;
         this.timeLine.clear(); // Czyszcze liste
-        Random rand = new Random((long) seed);
+        Random rand = new Random();
         for (int i = 0; i < n; ++i) {
             rt = rand.nextDouble() * (0.15 - 0.1)+0.1;
             this.timeLine.add(new TKEvent(at, rt));

@@ -6,57 +6,52 @@ import javafx.application.Platform;
 import pw.elka.controllers.FXMLGuiController;
 
 /**
- * Simulator1
+ * Klasa reprezentująca symulator
+ * @author Jan Jakubik & Oskar Misiewicz
  */
 public class Simulator {
 
     boolean serverCrashed = false;
     double crashedTimeEnd = 0;
-    private TKTimeLine pastTL;
-    private TKTimeLine pendingTL;
-    private TKTimeLine crashesTL;
-    private double lmd, mi, prevArrivalTime, waitingTime;
-    boolean rej;
-    private long queueCount, service, eventQuantity;
-    private Calculation calculation;
-    private GlobalCalculation globalStatistic;
+    private final TKTimeLine eventTL;
+    private final TKTimeLine pendingTL;
+    private final TKTimeLine crashesTL;
+    private final double lambda;
+    private final double mi;
+    private double prevArrivalTime, waitingTime;
+    private long service;
+    private final Calculation calculation;
+    private final GlobalCalculation globalCalculation;
     private final FXMLGuiController controller;
 
-    public Simulator(double lambda, double ro, boolean rej, FXMLGuiController con) {
-        this.lmd = lambda;
+    public Simulator(double lambda, FXMLGuiController con) {
+        this.lambda = lambda;
         this.mi = 8;
-
-        this.queueCount = 0;
         this.service = 0;
-        this.eventQuantity = 0;
         this.prevArrivalTime = 0;
         this.waitingTime = 0;
-        this.rej = rej;
-        this.pastTL = new TKTimeLine();
+        this.eventTL = new TKTimeLine();
         this.pendingTL = new TKTimeLine();
         this.crashesTL = new TKTimeLine();
         this.calculation = new Calculation();
-        this.globalStatistic = new GlobalCalculation();
+        this.globalCalculation = new GlobalCalculation();
         this.controller = con;
 
     }
 
     public void createEventList(long liczba, int seed, boolean uniform) {
         this.service = 0;
-        this.queueCount = 0;
         this.prevArrivalTime = 0;
         this.waitingTime = 0;
         if (uniform) {
-            this.pastTL.generateUniform(liczba, seed);
+            this.eventTL.generateUniform(liczba, seed);
         } else {
-            this.pastTL.generate(liczba, lmd, mi, seed);
+            this.eventTL.generate(liczba, lambda, mi, seed);
         }
-        // this.pastTL.print();
     }
 
-    // ToDo: nazwa jest na razie jak u Olka
-    public void estimate(int numberOfRepeats, int numberOfEvents, boolean crashes, boolean uniform) throws CloneNotSupportedException {
-        globalStatistic.clear();                        // Czyszczenie global statistic
+    public void run(int numberOfRepeats, int numberOfEvents, boolean crashes, boolean uniform) throws CloneNotSupportedException {
+        globalCalculation.clear();                        // Czyszczenie global statistic
         for (int i = 0; i < numberOfRepeats; ++i) {
             double p = (double) (i + 1) / numberOfRepeats;
 
@@ -66,72 +61,61 @@ public class Simulator {
 
             createEventList(numberOfEvents, i, uniform);             // Utworzenie listy zdarzeń
             if (crashes) {
-                this.crashesTL.generateCrashes(pastTL, i%2+1);
-                //System.out.println("Wygenerowano zawiechy");
-                //this.crashesTL.print();
+                this.crashesTL.generateCrashes(eventTL, i%2 + 1);
             }
             servEvent();                                 // Obsługa zdarzeń
-            //System.out.print(calculation.printStatistics()); 
-            globalStatistic.addStat(calculation);        // Dodanie statystyk
+
+            globalCalculation.addStat(calculation);        // Dodanie statystyk
             calculation.clear();                         // Czyszczenie obliczeń
         }
         Platform.runLater(() -> {
-            System.out.print(globalStatistic.printStatistics());
+            System.out.print(globalCalculation.printStatistics());
         });
-        // Wydruk kontrolny 
-        //System.out.print(globalStatistic.printCSV()); 
+
     }
 
     public void servEvent() {
-        //System.out.println("Rozpoczynam obliczanie");
-        //System.out.println("Ilosc zdarzen:" + this.pastTL.getLength());
-        while (this.pastTL.getLength() > 0 || this.pendingTL.getLength() > 0) {
+        while (this.eventTL.getLength() > 0 || this.pendingTL.getLength() > 0) {
             if (this.service == 0) {
                 if (pendingTL.getLength() > 0) {
                     servPending();
-                } else if (pastTL.getLength() > 0) {
-                    servCreated();
+                } else if (eventTL.getLength() > 0) {
+                    serviceCreated();
                 }
             } else {
-                if (pastTL.getLength() > 0) {
+                if (eventTL.getLength() > 0) {
                     servServiced();
                 }
             }
         }
     }
 
-    public void servCreated() {
+    public void serviceCreated() {
         // Nowe zdarzenia
-        TKEvent event = pastTL.get(); // Pobranie zdarzenia
-        //System.out.println("servCreated() zdarzenia o czasie obslugi:" + event.getTimeOfResidence());
+        TKEvent event = eventTL.get(); // Pobranie zdarzenia
         waitingTime = 0;
-        calculation.addCasQueue(queueCount);
-        calculation.addCasSys(queueCount);
+
         if (crashesTL.getLength() > 0) {
             TKEvent crash = crashesTL.get();
-            if (crash.getTimeOfArrival().doubleValue() < event.getTimeOfArrival().doubleValue()  &&  crash.getTimeOfArrival().doubleValue() + crash.getTimeOfResidence().doubleValue() > event.getTimeOfArrival().doubleValue()) {
-                calculation.addWaitTime(prevArrivalTime, crash.getTimeOfArrival().doubleValue() + crash.getTimeOfResidence().doubleValue());
-                event.set((crash.getTimeOfArrival().doubleValue() + crash.getTimeOfResidence().doubleValue() ),
-                        TKEvent.Status.CREATED.getStatusText());
+            if (crash.getTimeOfArrival().doubleValue() < event.getTimeOfArrival().doubleValue() && crash.getTimeOfArrival().doubleValue() + crash.getTimeOfResidence().doubleValue() > event.getTimeOfArrival().doubleValue()) {
+                calculation.waitingTime(prevArrivalTime, crash.getTimeOfArrival().doubleValue() + crash.getTimeOfResidence().doubleValue());
+                event.set((crash.getTimeOfArrival().doubleValue() + crash.getTimeOfResidence().doubleValue()), TKEvent.Status.CREATED.getStatusText());
 
-            } else if (crash.getTimeOfArrival().doubleValue() > event.getTimeOfArrival().doubleValue() && event.getTimeOfArrival().doubleValue() + event.getTimeOfResidence().doubleValue()  < crash.getTimeOfArrival().doubleValue()) {
-                calculation.addWaitTime(prevArrivalTime, event.getTimeOfArrival().doubleValue());
-                event.set((crash.getTimeOfArrival().doubleValue() + crash.getTimeOfResidence().doubleValue()),
-                        TKEvent.Status.PROCESSING.getStatusText());
+            } else if (crash.getTimeOfArrival().doubleValue() > event.getTimeOfArrival().doubleValue() && event.getTimeOfArrival().doubleValue() + event.getTimeOfResidence().doubleValue() < crash.getTimeOfArrival().doubleValue()) {
+                calculation.waitingTime(prevArrivalTime, event.getTimeOfArrival().doubleValue());
+                event.set((crash.getTimeOfArrival().doubleValue() + crash.getTimeOfResidence().doubleValue()), TKEvent.Status.PROCESSING.getStatusText());
 
             } else {
                 crashesTL.put(crash);
-                calculation.addWaitTime(prevArrivalTime, event.getTimeOfArrival().doubleValue());
-                event.set((event.getTimeOfArrival().doubleValue() + event.getTimeOfResidence().doubleValue()),
-                        TKEvent.Status.PROCESSING.getStatusText());
+                calculation.waitingTime(prevArrivalTime, event.getTimeOfArrival().doubleValue());
+                event.set((event.getTimeOfArrival().doubleValue() + event.getTimeOfResidence().doubleValue()), TKEvent.Status.PROCESSING.getStatusText());
             }
         } else {
-            calculation.addWaitTime(prevArrivalTime, event.getTimeOfArrival().doubleValue());
-            event.set((event.getTimeOfArrival().doubleValue() + event.getTimeOfResidence().doubleValue()),
-                    TKEvent.Status.PROCESSING.getStatusText());
+            calculation.waitingTime(prevArrivalTime, event.getTimeOfArrival().doubleValue());
+            event.set((event.getTimeOfArrival().doubleValue() + event.getTimeOfResidence().doubleValue()), TKEvent.Status.PROCESSING.getStatusText());
         }
         service = 1;
-        pastTL.put(event);
+        eventTL.put(event);
     }
 
     // Zdarzenia w buforze
@@ -140,36 +124,24 @@ public class Simulator {
         TKEvent event = pendingTL.get();
         // System.out.println("servPending() Obsługa zdarzenie o czasie obslugi:" + event.getTimeOfResidence());
         if (serverCrashed) {
-            waitingTime = calculation.addWaitTime(prevArrivalTime, crashedTimeEnd);
+            waitingTime = calculation.waitingTime(prevArrivalTime, crashedTimeEnd);
         } else {
-            waitingTime = calculation.addWaitTime(prevArrivalTime, event.getTimeOfArrival().doubleValue());
+            waitingTime = calculation.waitingTime(prevArrivalTime, event.getTimeOfArrival().doubleValue());
         }
-
-        event.set(prevArrivalTime + event.getTimeOfResidence().doubleValue(),
-                TKEvent.Status.PROCESSING.getStatusText());
+        event.set(prevArrivalTime + event.getTimeOfResidence().doubleValue(), TKEvent.Status.PROCESSING.getStatusText());
         service = 1;
-        queueCount -= 1;
-        pastTL.put(event);
+        eventTL.put(event);
     }
 
     public void servServiced() {
 
-        // Koniec obsługi
-        TKEvent event = pastTL.get();
-
+        TKEvent event = eventTL.get();
         if (event.getEventStatus().getStatusText().equals(TKEvent.Status.PROCESSING.getStatusText())) {
-            //System.out.println("servServiced() Koniec obsługi zdarzenia o czasie obslugi:" + event.getTimeOfResidence());
             service = 0;
-            calculation.addPocTime(waitingTime, event.getTimeOfResidence().doubleValue());
+            calculation.processingTime(waitingTime, event.getTimeOfResidence().doubleValue());
             prevArrivalTime = event.getTimeOfArrival().doubleValue();
-        } else if (event.getEventStatus().getStatusText().equals(TKEvent.Status.CREATED.getStatusText())) {//Dodanie zdarzenia do listy zdarzeń oczekujacych 
-            //System.out.println("servServiced() Wrzucanie zdarzenia do oczekujacych o czasie obslugi:" + event.getTimeOfResidence());
-
-            calculation.addCasQueue(queueCount);
-            calculation.addCasSys(queueCount + service);
+        } else if (event.getEventStatus().getStatusText().equals(TKEvent.Status.CREATED.getStatusText())) {
             event.set(-1, TKEvent.Status.PENDING.getStatusText());
-            queueCount += 1;
-            //System.out.print("que: " +  queueCount);
             pendingTL.put(event);
         }
         if (event.getTimeOfArrival().doubleValue() > crashedTimeEnd) {
@@ -178,23 +150,15 @@ public class Simulator {
 
     }
 
-    public void printList() {
-        pastTL.print();
-    }
-
-    public void printStat(int numElem) {
-        this.calculation.printStatistics();
-    }
-
-    public void printGlobStat(int numElem) {
-        this.globalStatistic.printStatistics();
+    public void printGlobalCalculation(int numElem) {
+        this.globalCalculation.printStatistics();
     }
 
     public String getCsv() {
-        return globalStatistic.printCSV();
+        return globalCalculation.printCSV();
     }
 
     public void compute() {
-        globalStatistic.compute();
+        globalCalculation.compute();
     }
 }
