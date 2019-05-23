@@ -66,7 +66,7 @@ public class Simulator {
 
             createEventList(numberOfEvents, i, uniform);             // Utworzenie listy zdarzeń
             if (crashes) {
-                this.crashesTL.generateCrashes(pastTL);
+                this.crashesTL.generateCrashes(pastTL, i%2+1);
                 //System.out.println("Wygenerowano zawiechy");
                 //this.crashesTL.print();
             }
@@ -109,16 +109,14 @@ public class Simulator {
         calculation.addCasSys(queueCount);
         if (crashesTL.getLength() > 0) {
             TKEvent crash = crashesTL.get();
-            if (crash.getTimeOfArrival().doubleValue() < event.getTimeOfArrival().doubleValue() && (crash.getTimeOfArrival().doubleValue() + crash.getTimeOfResidence().doubleValue()) > event.getTimeOfArrival().doubleValue()) {
+            if (crash.getTimeOfArrival().doubleValue() < event.getTimeOfArrival().doubleValue()  &&  crash.getTimeOfArrival().doubleValue() + crash.getTimeOfResidence().doubleValue() > event.getTimeOfArrival().doubleValue()) {
                 calculation.addWaitTime(prevArrivalTime, crash.getTimeOfArrival().doubleValue() + crash.getTimeOfResidence().doubleValue());
-                event.set((crash.getTimeOfArrival().doubleValue() + crash.getTimeOfResidence().doubleValue() + event.getTimeOfResidence().doubleValue()),
-                        TKEvent.Status.PROCESSING.getStatusText());
+                event.set((crash.getTimeOfArrival().doubleValue() + crash.getTimeOfResidence().doubleValue() ),
+                        TKEvent.Status.CREATED.getStatusText());
 
-                pastTL.put(event);
-                serverCrashed = true;
-            } else if (crash.getTimeOfArrival().doubleValue() < event.getTimeOfArrival().doubleValue() && (crash.getTimeOfArrival().doubleValue() + crash.getTimeOfResidence().doubleValue()) < event.getTimeOfArrival().doubleValue()) {
+            } else if (crash.getTimeOfArrival().doubleValue() > event.getTimeOfArrival().doubleValue() && event.getTimeOfArrival().doubleValue() + event.getTimeOfResidence().doubleValue()  < crash.getTimeOfArrival().doubleValue()) {
                 calculation.addWaitTime(prevArrivalTime, event.getTimeOfArrival().doubleValue());
-                event.set((event.getTimeOfArrival().doubleValue() + event.getTimeOfResidence().doubleValue()),
+                event.set((crash.getTimeOfArrival().doubleValue() + crash.getTimeOfResidence().doubleValue()),
                         TKEvent.Status.PROCESSING.getStatusText());
 
             } else {

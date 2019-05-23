@@ -63,11 +63,11 @@ public class TKTimeLine {
         }
     }
     
-    public void generateCrashes(TKTimeLine events) {
+    public void generateCrashes(TKTimeLine events, double seed) {
         double at = 0, rt = 0;
         this.timeLine.clear(); // Czyszcze liste
-        //System.out.println("Generuje crashe start");
-        Random rand = new Random();
+        //System.out.println("Generuje crashe seed: " + seed);
+        Random rand = new Random((long) seed);
         while(at < (events.getLast().getTimeOfArrival().doubleValue() + events.getLast().getTimeOfResidence().doubleValue() )){
             double t = 0.02857142857142857;
             rt = exponentialGenerator(rand, t);
