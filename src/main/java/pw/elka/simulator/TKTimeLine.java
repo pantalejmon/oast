@@ -39,10 +39,10 @@ public class TKTimeLine {
         return this.timeLine.size();
     }
 
-    public void generate(long n, double lmd, double mi, double seed) {
+    public void generate(long n, double lmd, double mi) {
         double at = 0, rt = 0;
         this.timeLine.clear(); // Czyszcze liste
-        Random rand = new Random((long) seed);
+        Random rand = new Random();
         for (int i = 0; i < n; ++i) {
             rt = exponentialGenerator(rand, mi);
             this.timeLine.add(new TKEvent(at, rt));
@@ -50,7 +50,7 @@ public class TKTimeLine {
         }
     }
     
-    public void generateUniform( long n ,double seed) {
+    public void generateUniform( long n ) {
         double at = 0, rt = 0;
         this.timeLine.clear(); // Czyszcze liste
         Random rand = new Random();
@@ -61,15 +61,14 @@ public class TKTimeLine {
         }
     }
     
-    public void generateCrashes(TKTimeLine events, double seed) {
+    public void generateCrashes(TKTimeLine events) {
         double at = 0, rt = 0;
         this.timeLine.clear(); // Czyszcze liste
         //System.out.println("Generuje crashe seed: " + seed);
-        Random rand = new Random((long) seed);
-        while(at < (events.getLast().getTimeOfArrival().doubleValue() + events.getLast().getTimeOfResidence().doubleValue() )){
+        Random rand = new Random();
+        while(at  + rt< (events.getLast().getTimeOfArrival().doubleValue() + events.getLast().getTimeOfResidence().doubleValue() )){
             double t = 0.02857142857142857;
             rt = exponentialGenerator(rand, t);
-            //System.out.println("Generuje crashe");
             t = 0.025;
             at += exponentialGenerator(rand, t);
             this.timeLine.add(new TKEvent(at,rt , TKEvent.Status.CRASHED));

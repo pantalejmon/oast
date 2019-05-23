@@ -32,7 +32,7 @@ public class TKEvent {
     }
 
     private Number timeOfArrival; // Chyba nie ma co dawac tu final
-    private final Number timeOfResidence;
+    private  Number timeOfResidence;
     private Status eventStatus;
 
     public TKEvent(Number timeOfArrival, Number timeOfResidence, String eventStatus) {
@@ -74,6 +74,10 @@ public class TKEvent {
     public void set(Number arrival, String status) {
         this.eventStatus = Status.fromString(status);
         this.timeOfArrival = (arrival.doubleValue() > 0) ? arrival : this.timeOfArrival;
+    }
+    public void setProc(Number proc) {
+       
+        this.timeOfResidence = (proc.doubleValue() > 0) ? proc: this.timeOfResidence;
     }
 
 }
